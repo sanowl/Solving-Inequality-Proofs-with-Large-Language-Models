@@ -17,8 +17,8 @@ import sympy as sp
 from typing import Dict, List, Tuple, Optional, Union
 from dataclasses import dataclass, field
 from enum import Enum
-import random
 from abc import ABC, abstractmethod
+import secrets
 
 # ================================
 # Dataset Structures
@@ -529,13 +529,13 @@ class MockLLM:
     def _generate_bound_response(self, problem: IneqProblem) -> str:
         """Generate mock bound problem response"""
         # Correct answer with some probability
-        if random.random() > self.error_rates['answer_error']:
+        if secrets.SystemRandom().random() > self.error_rates['answer_error']:
             answer = problem.ground_truth
         else:
             # Generate wrong answer
             try:
                 correct_val = float(problem.ground_truth)
-                answer = str(correct_val + random.uniform(-1, 1))
+                answer = str(correct_val + secrets.SystemRandom().uniform(-1, 1))
             except:
                 answer = "2"
         
@@ -558,11 +558,11 @@ Therefore, the answer is C = {answer}.
     def _generate_relation_response(self, problem: IneqProblem) -> str:
         """Generate mock relation problem response"""
         # Correct answer with some probability
-        if random.random() > self.error_rates['answer_error']:
+        if secrets.SystemRandom().random() > self.error_rates['answer_error']:
             answer = problem.ground_truth
         else:
             options = ['A', 'B', 'C', 'D', 'E', 'F']
-            answer = random.choice([opt for opt in options if opt != problem.ground_truth])
+            answer = secrets.choice([opt for opt in options if opt != problem.ground_truth])
         
         return f"""
 I need to determine the relationship between the two sides of this inequality.
@@ -591,18 +591,18 @@ Therefore, the answer is ({answer}) {self._get_symbol_for_option(answer)}.
     def _add_controlled_errors(self, response: str, problem: IneqProblem) -> str:
         """Add specific types of errors based on error rates"""
         # Add toy case error
-        if random.random() < self.error_rates['toy_case_error']:
+        if secrets.SystemRandom().random() < self.error_rates['toy_case_error']:
             response += "\nFrom these test cases, we can conclude that the inequality holds universally."
         
         # Add logical gap error
-        if random.random() < self.error_rates['logical_gap_error']:
+        if secrets.SystemRandom().random() < self.error_rates['logical_gap_error']:
             response = response.replace(
                 "detailed analysis involving Lagrange multipliers",
                 "clearly by symmetry"
             )
         
         # Add numerical approximation error
-        if random.random() < self.error_rates['numerical_approx_error']:
+        if secrets.SystemRandom().random() < self.error_rates['numerical_approx_error']:
             response = response.replace("particular value", "particular value ≈ 3.14159")
         
         return response
