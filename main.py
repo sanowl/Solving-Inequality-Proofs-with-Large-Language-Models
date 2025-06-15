@@ -140,7 +140,6 @@ class FinalAnswerJudge(BaseJudge):
             r"answer.*?([A-F])",
             r"\(([A-F])\)"
         ]
-        
         extracted_option = None
         for pattern in patterns:
             match = re.search(pattern, response, re.IGNORECASE)
